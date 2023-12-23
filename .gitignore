@@ -1,0 +1,11 @@
+.env
+.venv
+_pycache__
+dkdata
+*.pyc
+.coverage
+coverage.xml
+htmlcov/
+.idea
+/static
+.vscode
