@@ -8,14 +8,14 @@ from django.dispatch import receiver
 class Ingredient(models.Model):
     name = models.CharField(max_length=120)
     brand = models.CharField(max_length=120, blank=True)
-    amount = models.FloatField()
-    carbohydrate = models.FloatField()
-    protein = models.FloatField()
-    total_fat = models.FloatField()
-    trans_fat = models.FloatField()
-    saturated_fat = models.FloatField()
-    fiber = models.FloatField()
-    sodium = models.FloatField()
+    amount = models.FloatField(default=0)
+    carbohydrate = models.FloatField(default=0)
+    protein = models.FloatField(default=0)
+    total_fat = models.FloatField(default=0)
+    trans_fat = models.FloatField(default=0)
+    saturated_fat = models.FloatField(default=0)
+    fiber = models.FloatField(default=0)
+    sodium = models.FloatField(default=0)
     calory = models.FloatField(blank=True, null=True)
 
     def calculate_calories(self):
@@ -37,3 +37,21 @@ def calculate_calories_on_save(sender, instance, **kwargs):
     if instance.calory is None:
         instance.calory = instance.calculate_calories()
         instance.save()
+
+
+class Recipe(models.Model):
+    title = models.CharField(max_length=255)
+    ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient')
+    total_carbohydrate = models.FloatField(default=0)
+    total_protein = models.FloatField(default=0)
+    total_total_fat = models.FloatField(default=0)
+    total_trans_fat = models.FloatField(default=0)
+    total_saturated_fat = models.FloatField(default=0)
+    total_fiber = models.FloatField(default=0)
+    total_sodium = models.FloatField(default=0)
+    total_calory = models.FloatField(default=0)
+
+class RecipeIngredient(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
+    amount = models.FloatField()
