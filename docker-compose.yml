@@ -16,6 +16,38 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+  
+  backend:
+    image: backend-gastrofit
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    network_mode: "host"
+    command: wait-for-it $POSTGRES_HOST:$POSTGRES_PORT -- bash -c "python manage.py migrate && python manage.py runserver"
+    expose:
+      - "8000"
+    volumes:
+      - ./:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+  
+  frontend:
+    build:
+      context: ./frontend
+    image: frontend-gastrofit
+    hostname: frontend-gastrofit
+    command: npm run dev
+    network_mode: "host"
+    expose:
+      - "5173"
+    env_file:
+      - .env
+    volumes:
+      - /frontend/node_modules
+      - ./frontend:/frontend
 
 volumes:
   postgres_data:
