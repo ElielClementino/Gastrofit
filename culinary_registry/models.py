@@ -26,11 +26,12 @@ class Ingredient(models.Model):
         saturated_fat_calories = self.saturated_fat * 9
         fiber_calories = self.fiber * 4
         calories = carbohydrate_calories + protein_calories + total_fat_calories + trans_fat_calories + saturated_fat_calories + fiber_calories
-        
+
         return calories
 
     def __str__(self):
         return self.name
+
 
 @receiver(post_save, sender=Ingredient)
 def calculate_calories_on_save(sender, instance, **kwargs):
@@ -50,6 +51,7 @@ class Recipe(models.Model):
     total_fiber = models.FloatField(default=0)
     total_sodium = models.FloatField(default=0)
     total_calory = models.FloatField(default=0)
+
 
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
