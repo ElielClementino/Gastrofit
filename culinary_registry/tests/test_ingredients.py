@@ -1,6 +1,7 @@
 from django.test import Client
 from model_bakery import baker, seq
-from culinary_registry.models import Recipe, RecipeIngredient, Ingredient
+
+from culinary_registry.models import Ingredient, Recipe, RecipeIngredient
 
 
 def calculate_calories(obj):

@@ -1,6 +1,7 @@
 from django.db.models import Q
-from culinary_registry.serializers import IngredientSerializer
+
 from culinary_registry.models import Ingredient
+from culinary_registry.serializers import IngredientSerializer
 
 
 def list_ingredients(params):
