@@ -1,10 +1,28 @@
 from django.http import JsonResponse
 from django.forms.models import model_to_dict
+from django.core.paginator import Paginator
 from culinary_registry.forms import ingredient_form
 from culinary_registry.service import ingredient_svc
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from pydantic import ValidationError
 import json
+
+
+@require_GET
+def list_ingredients(request):
+    page_number = request.GET.get('page', 1)
+    params = request.GET
+
+    try:
+        ingredient_service_result = ingredient_svc.list_ingredients(params)
+
+        paginator = Paginator(ingredient_service_result, 15)
+        ingredients_page = paginator.page(page_number).object_list
+
+        return JsonResponse({"ingredients": ingredients_page, "page": page_number, "total_pages": paginator.num_pages})
+
+    except Exception as e:
+        return JsonResponse({"error": f"Erro inesperado: {e}"}, status=500)
 
 
 @require_POST
@@ -24,3 +42,5 @@ def add_ingredient(request):
     except ValidationError as ife:
         return JsonResponse({"error": f"Dados do formulário inválidos: {ife}"}, status=400)
 
+    except Exception as e:
+        return JsonResponse({"error": f"Erro inesperado: {e}"}, status=500)

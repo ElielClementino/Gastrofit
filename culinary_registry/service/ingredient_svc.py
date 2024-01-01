@@ -1,5 +1,21 @@
 from django.db.models import Q
+from culinary_registry.serializers import IngredientSerializer
 from culinary_registry.models import Ingredient
+
+
+def list_ingredients(params):
+    ingredients = Ingredient.objects.all()
+
+    if 'name' in params:
+        ingredients = ingredients.filter(name=params['name'])
+    if 'brand' in params:
+        ingredients = ingredients.filter(brand=params['brand'])
+    if 'name' in params and 'brand' in params:
+        ingredients = ingredients.filter(Q(name=params['name']) & Q(brand=params['brand']))
+
+    serialized_data = IngredientSerializer.to_json_list(ingredients)
+
+    return serialized_data
 
 
 def add_ingredient(ingredient):

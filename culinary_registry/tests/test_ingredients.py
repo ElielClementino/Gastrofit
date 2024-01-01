@@ -1,5 +1,5 @@
 from django.test import Client
-from model_bakery import baker
+from model_bakery import baker, seq
 from culinary_registry.models import Recipe, RecipeIngredient, Ingredient
 
 
@@ -37,6 +37,83 @@ def test_if_calories_is_being_calculated_correctly(db):
     calories = calculate_calories(ingredient)
 
     assert ingredient.calory == calories
+
+
+def test_list_all_ingredients_without_ingredients(db):
+    c = Client()
+
+    request = c.get("/api/culinary/list/ingredients")
+    response = request.json()
+
+    assert request.status_code == 200
+    assert len(response['ingredients']) == 0
+
+
+def test_list_all_ingredients(db):
+    c = Client()
+    baker.make("Ingredient", _quantity=10)
+
+    request = c.get("/api/culinary/list/ingredients")
+    response = request.json()
+
+    assert request.status_code == 200
+    assert len(response['ingredients']) == 10
+
+
+def test_list_all_ingredients_pagination(db):
+    c = Client()
+    baker.make("Ingredient", name=seq('ingredient'), _quantity=25)
+
+    request_page1 = c.get("/api/culinary/list/ingredients?page=1")
+    response_page1 = request_page1.json()
+
+    assert request_page1.status_code == 200
+    assert len(response_page1['ingredients']) == 15
+
+    request_page2 = c.get("/api/culinary/list/ingredients?page=2")
+    response_page2 = request_page2.json()
+    
+    assert request_page2.status_code == 200
+    assert len(response_page2['ingredients']) == 10
+    assert response_page1['ingredients'] != response_page2['ingredients']
+
+
+def test_list_all_ingredients_filter_by_name(db):
+    c = Client()
+    baker.make("Ingredient", name='Farinha de Trigo', brand=seq('marca'), _quantity=5)
+    baker.make("Ingredient", name="Farinha de Arroz", brand=seq('marca'), _quantity=5)
+
+    request = c.get("/api/culinary/list/ingredients?name=Farinha de Trigo")
+    response = request.json()
+
+    assert request.status_code == 200
+    assert len(response['ingredients']) == 5
+
+
+def test_list_all_ingredients_filter_by_brand(db):
+    c = Client()
+    baker.make("Ingredient", name='Farinha de Trigo', brand='marca')
+    baker.make("Ingredient", name="Farinha de Arroz", brand='marca')
+
+    request = c.get("/api/culinary/list/ingredients?brand=marca")
+    response = request.json()
+
+    assert request.status_code == 200
+    assert len(response['ingredients']) == 2
+
+
+def test_list_all_ingredients_filter_by_name_brand(db):
+    c = Client()
+    baker.make("Ingredient", name='Farinha de Trigo', brand='marca')
+    baker.make("Ingredient", name="Farinha de Arroz", brand='marca')
+
+    request = c.get("/api/culinary/list/ingredients?name=Farinha de Trigo&?brand=marca")
+    response = request.json()
+
+    assert request.status_code == 200
+    assert len(response['ingredients']) == 1
+    assert response['ingredients'][0]['name'] == 'Farinha de Trigo'
+    assert response['ingredients'][0]['brand'] == 'marca'
 
 
 def test_add_new_ingredient(db):
