@@ -1,5 +1,6 @@
 import json
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
@@ -43,6 +44,20 @@ def add_ingredient(request):
 
     except ValidationError as ife:
         return JsonResponse({"error": f"Dados do formulário inválidos: {ife}"}, status=400)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Erro inesperado: {e}"}, status=500)
+
+
+@require_POST
+def delete_ingredient(request, pk):
+    try:
+        ingredient_deleted = ingredient_svc.delete_ingredient(pk)
+
+        return JsonResponse({"message": "Ingrediente excluído com sucesso!", "deleted_ingredient": model_to_dict(ingredient_deleted)}, status=200)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Ingrediente não encontrado"}, status=404)
 
     except Exception as e:
         return JsonResponse({"error": f"Erro inesperado: {e}"}, status=500)

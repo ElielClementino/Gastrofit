@@ -1,7 +1,7 @@
 from django.test import Client
 from model_bakery import baker, seq
 
-from culinary_registry.models import Ingredient, Recipe, RecipeIngredient
+from culinary_registry.models import Ingredient
 
 
 def calculate_calories(obj):
@@ -200,3 +200,51 @@ def test_trying_to_create_ingredient_malformated(db):
 
     assert request.status_code == 400
     assert response['error']
+
+
+def test_delete_ingredient(db):
+    c = Client()
+    new_ingredient = baker.make("Ingredient", pk=1, name="Farinha de Trigo")
+    
+    ingredient = Ingredient.objects.filter(pk=new_ingredient.pk).exists()
+    assert ingredient
+
+    request = c.post("/api/culinary/delete/ingredient/1")
+    response = request.json()
+
+    ingredient = Ingredient.objects.filter(pk=new_ingredient.pk).exists()
+    
+    assert request.status_code == 200
+    assert not ingredient
+    assert response['deleted_ingredient']['name'] == new_ingredient.name
+
+
+def test_delete_non_existent_ingredient(db):
+    c = Client()
+
+    request = c.post("/api/culinary/delete/ingredient/1")
+    response = request.json()
+    
+    assert request.status_code == 404
+    assert response['error'] == 'Ingrediente não encontrado'
+
+
+def test_delete_right_ingredient(db):
+    c = Client()
+
+    baker.make("Ingredient", pk=1)
+    baker.make("Ingredient", pk=2)
+    ingredients = Ingredient.objects.all()
+
+    assert len(ingredients) == 2
+
+    request = c.post("/api/culinary/delete/ingredient/1")
+    response = request.json()
+
+    ingredient = Ingredient.objects.filter(pk=1).exists()
+    ingredients = Ingredient.objects.all()
+
+    assert request.status_code == 200
+    assert not ingredient
+    assert len(ingredients) == 1
+    assert ingredients[0].id == 2

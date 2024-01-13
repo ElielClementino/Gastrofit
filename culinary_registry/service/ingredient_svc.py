@@ -37,4 +37,13 @@ def add_ingredient(ingredient):
     }
 
     ingredient_obj = Ingredient.objects.create(**ingredient_dict)
+
     return ingredient_obj
+
+
+def delete_ingredient(ingredient_id):
+    ingredient = Ingredient.objects.get(pk=ingredient_id)
+
+    ingredient.delete()
+
+    return ingredient
