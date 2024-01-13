@@ -43,7 +43,7 @@ def test_if_calories_is_being_calculated_correctly(db):
 def test_list_all_ingredients_without_ingredients(db):
     c = Client()
 
-    request = c.get("/api/culinary/list/ingredients")
+    request = c.get("/api/culinary/list/ingredients/")
     response = request.json()
 
     assert request.status_code == 200
@@ -54,7 +54,7 @@ def test_list_all_ingredients(db):
     c = Client()
     baker.make("Ingredient", _quantity=10)
 
-    request = c.get("/api/culinary/list/ingredients")
+    request = c.get("/api/culinary/list/ingredients/")
     response = request.json()
 
     assert request.status_code == 200
@@ -65,13 +65,13 @@ def test_list_all_ingredients_pagination(db):
     c = Client()
     baker.make("Ingredient", name=seq('ingredient'), _quantity=25)
 
-    request_page1 = c.get("/api/culinary/list/ingredients?page=1")
+    request_page1 = c.get("/api/culinary/list/ingredients/?page=1")
     response_page1 = request_page1.json()
 
     assert request_page1.status_code == 200
     assert len(response_page1['ingredients']) == 15
 
-    request_page2 = c.get("/api/culinary/list/ingredients?page=2")
+    request_page2 = c.get("/api/culinary/list/ingredients/?page=2")
     response_page2 = request_page2.json()
     
     assert request_page2.status_code == 200
@@ -84,7 +84,7 @@ def test_list_all_ingredients_filter_by_name(db):
     baker.make("Ingredient", name='Farinha de Trigo', brand=seq('marca'), _quantity=5)
     baker.make("Ingredient", name="Farinha de Arroz", brand=seq('marca'), _quantity=5)
 
-    request = c.get("/api/culinary/list/ingredients?name=Farinha de Trigo")
+    request = c.get("/api/culinary/list/ingredients/?name=Farinha de Trigo")
     response = request.json()
 
     assert request.status_code == 200
@@ -96,7 +96,7 @@ def test_list_all_ingredients_filter_by_brand(db):
     baker.make("Ingredient", name='Farinha de Trigo', brand='marca')
     baker.make("Ingredient", name="Farinha de Arroz", brand='marca')
 
-    request = c.get("/api/culinary/list/ingredients?brand=marca")
+    request = c.get("/api/culinary/list/ingredients/?brand=marca")
     response = request.json()
 
     assert request.status_code == 200
@@ -108,7 +108,7 @@ def test_list_all_ingredients_filter_by_name_brand(db):
     baker.make("Ingredient", name='Farinha de Trigo', brand='marca')
     baker.make("Ingredient", name="Farinha de Arroz", brand='marca')
 
-    request = c.get("/api/culinary/list/ingredients?name=Farinha de Trigo&?brand=marca")
+    request = c.get("/api/culinary/list/ingredients/?name=Farinha de Trigo&?brand=marca")
     response = request.json()
 
     assert request.status_code == 200
@@ -132,7 +132,7 @@ def test_add_new_ingredient(db):
         "sodium": 0.20,
         "calory": 0,
     }
-    request = c.post("/api/culinary/new/ingredient", new_ingredient, content_type="application/json")
+    request = c.post("/api/culinary/new/ingredient/", new_ingredient, content_type="application/json")
     response = request.json()
 
     assert request.status_code == 201
@@ -173,7 +173,7 @@ def test_add_duplicated_ingredient(db):
         "calory": 0,
     }
 
-    request = c.post("/api/culinary/new/ingredient", new_ingredient, content_type="application/json")
+    request = c.post("/api/culinary/new/ingredient/", new_ingredient, content_type="application/json")
     response = request.json()
 
     assert request.status_code == 400
@@ -195,7 +195,7 @@ def test_trying_to_create_ingredient_malformated(db):
         "calory": 0,
     }
 
-    request = c.post("/api/culinary/new/ingredient", new_ingredient, content_type="application/json")
+    request = c.post("/api/culinary/new/ingredient/", new_ingredient, content_type="application/json")
     response = request.json()
 
     assert request.status_code == 400
@@ -209,7 +209,7 @@ def test_delete_ingredient(db):
     ingredient = Ingredient.objects.filter(pk=new_ingredient.pk).exists()
     assert ingredient
 
-    request = c.post("/api/culinary/delete/ingredient/1")
+    request = c.post("/api/culinary/delete/ingredient/1/")
     response = request.json()
 
     ingredient = Ingredient.objects.filter(pk=new_ingredient.pk).exists()
@@ -222,7 +222,7 @@ def test_delete_ingredient(db):
 def test_delete_non_existent_ingredient(db):
     c = Client()
 
-    request = c.post("/api/culinary/delete/ingredient/1")
+    request = c.post("/api/culinary/delete/ingredient/1/")
     response = request.json()
     
     assert request.status_code == 404
@@ -238,7 +238,7 @@ def test_delete_right_ingredient(db):
 
     assert len(ingredients) == 2
 
-    request = c.post("/api/culinary/delete/ingredient/1")
+    request = c.post("/api/culinary/delete/ingredient/1/")
     response = request.json()
 
     ingredient = Ingredient.objects.filter(pk=1).exists()
