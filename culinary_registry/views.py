@@ -61,3 +61,23 @@ def delete_ingredient(request, pk):
 
     except Exception as e:
         return JsonResponse({"error": f"Erro inesperado: {e}"}, status=500)
+
+
+def update_ingredient(request, pk):
+    try:
+        updated_ingredient_body = json.loads(request.body)
+
+        ingredient_form.IngredientForm(**updated_ingredient_body)
+
+        updated_ingredient = ingredient_svc.update_ingredient(updated_ingredient_body, pk)
+
+        return JsonResponse({"message": "Ingrediente Atualizado com sucesso!", "updated_ingredient": model_to_dict(updated_ingredient)}, status=200)
+
+    except ObjectDoesNotExist:
+        return JsonResponse({"error": "Ingrediente não encontrado"}, status=404)
+
+    except ValidationError as ife:
+        return JsonResponse({"error": f"Dados do formulário inválidos: {ife}"}, status=400)
+
+    except Exception as e:
+        return JsonResponse({"error": f"Erro inesperado: {e}"}, status=500)

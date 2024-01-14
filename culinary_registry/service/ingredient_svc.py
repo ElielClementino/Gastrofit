@@ -47,3 +47,12 @@ def delete_ingredient(ingredient_id):
     ingredient.delete()
 
     return ingredient
+
+
+def update_ingredient(updated_ingredient, pk):
+
+    Ingredient.objects.filter(pk=pk).update(**updated_ingredient)
+
+    updated_ingredient = Ingredient.objects.get(pk=pk)
+
+    return updated_ingredient

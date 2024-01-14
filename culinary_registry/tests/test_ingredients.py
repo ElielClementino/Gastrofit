@@ -248,3 +248,115 @@ def test_delete_right_ingredient(db):
     assert not ingredient
     assert len(ingredients) == 1
     assert ingredients[0].id == 2
+
+
+def test_update_ingredient(db):
+    c = Client()
+
+    baker.make("Ingredient", pk=1, amount=100)
+
+    updated_ingredient_body = {
+        "name": "Farinha de Trigo",
+        "brand": "Marca",
+        "amount": 1000,
+        "carbohydrate": 15.02,
+        "protein": 1.96,
+        "total_fat": 0.28,
+        "trans_fat": 0,
+        "saturated_fat": 0.04,
+        "fiber": 0.46,
+        "sodium": 0.20,
+        "calory": 0,
+    }
+    outdated_ingredient = Ingredient.objects.first()
+
+    request = c.put("/api/culinary/update/ingredient/1/", updated_ingredient_body, content_type="application/json")
+    response = request.json()
+
+    updated_ingredient = Ingredient.objects.first()
+
+    assert request.status_code == 200
+    assert response['updated_ingredient']['amount'] != outdated_ingredient.amount
+    assert updated_ingredient.amount == updated_ingredient_body['amount']
+
+
+def test_update_non_existent_ingredient(db):
+    c = Client()
+
+    baker.make("Ingredient", pk=1)
+
+    updated_ingredient_body = {
+        "name": "Farinha de Trigo",
+        "brand": "Marca",
+        "amount": 1000,
+        "carbohydrate": 15.02,
+        "protein": 1.96,
+        "total_fat": 0.28,
+        "trans_fat": 0,
+        "saturated_fat": 0.04,
+        "fiber": 0.46,
+        "sodium": 0.20,
+        "calory": 0,
+    }
+
+    request = c.put("/api/culinary/update/ingredient/2/", updated_ingredient_body, content_type="application/json")
+    response = request.json()
+
+    assert request.status_code == 404
+    assert response['error'] == 'Ingrediente não encontrado'
+
+
+def test_update_right_ingredient(db):
+    c = Client()
+
+    baker.make("Ingredient", pk=1, name="Farinha de Trigo")
+    baker.make("Ingredient", pk=2, name="Farinha de Trigo")
+    outdated_ingredient = Ingredient.objects.filter(pk=1)
+
+    updated_ingredient_body = {
+        "name": "Farinha de Trigo Integral",
+        "brand": "Marca",
+        "amount": 1000,
+        "carbohydrate": 15.02,
+        "protein": 1.96,
+        "total_fat": 0.28,
+        "trans_fat": 0,
+        "saturated_fat": 0.04,
+        "fiber": 0.46,
+        "sodium": 0.20,
+        "calory": 0,
+    }
+    updated_ingredient = Ingredient.objects.filter(pk=1)
+
+    request = c.put("/api/culinary/update/ingredient/1/", updated_ingredient_body, content_type="application/json")
+    response = request.json()
+
+    assert request.status_code == 200
+    assert response['updated_ingredient']['id'] == 1
+    assert response['updated_ingredient']['name'] != outdated_ingredient
+    assert updated_ingredient[0].name == "Farinha de Trigo Integral"
+
+
+def test_trying_to_update_ingredient_malformated(db):
+    c = Client()
+
+    baker.make("Ingredient", pk=1)
+
+    updated_ingredient_body = {
+        "brand": "Marca",
+        "amount": 1000,
+        "carbohydrate": 15.02,
+        "protein": 1.96,
+        "total_fat": 0.28,
+        "trans_fat": 0,
+        "saturated_fat": 0.04,
+        "fiber": 0.46,
+        "sodium": 0.20,
+        "calory": 0,
+    }
+
+    request = c.put("/api/culinary/update/ingredient/1/", updated_ingredient_body, content_type="application/json")
+    response = request.json()
+
+    assert request.status_code == 400
+    assert response['error']
