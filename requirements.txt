@@ -1,9 +1,11 @@
 annotated-types==0.6.0
 asgiref==3.7.2
+coverage==7.4.0
 Django==5.0
 django-extensions==3.2.3
 flake8==6.1.0
 iniconfig==2.0.0
+isort==5.13.2
 mccabe==0.7.0
 model-bakery==1.17.0
 packaging==23.2
@@ -14,6 +16,7 @@ pydantic==2.5.3
 pydantic_core==2.14.6
 pyflakes==3.1.0
 pytest==7.4.3
+pytest-cov==4.1.0
 pytest-django==4.7.0
 python-dotenv==1.0.0
 sqlparse==0.4.4
