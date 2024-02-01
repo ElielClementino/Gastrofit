@@ -26,8 +26,8 @@
     export default {
         setup() {
             const LINKS = [
-                {name: "Página Inicial", url: "#"},
-                {name: "Ingredientes", url: "#"},
+                {name: "Página Inicial", url: "/"},
+                {name: "Ingredientes", url: "ingredients"},
                 {name: "Receitas", url: "#"},
                 {name: "Dietas", url: "#"},
             ]

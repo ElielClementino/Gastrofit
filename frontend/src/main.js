@@ -1,5 +1,6 @@
 import './assets/tailwind.css'
 import './assets/main.css'
+import '@mdi/font/css/materialdesignicons.css'
 
 
 import 'vuetify/styles'
@@ -10,6 +11,9 @@ import * as directives from 'vuetify/directives'
 const vuetify = createVuetify({
     components,
     directives,
+    icons: {
+      iconfont: 'mdi',
+    },
   })
 
 import { createApp } from 'vue'
