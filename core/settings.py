@@ -46,6 +46,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "django_extensions",
+    "corsheaders",
 ]
 
 LOCAL_APPS = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -85,12 +87,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 CSRF_TRUSTED_ORIGINS = [
-    os.getenv("FRONTEND_ORIGIN", "http://localhost:3000"),
+    os.getenv("FRONTEND_ORIGIN", "http://localhost:5173"),
 ]
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_ORIGIN_WHITELIST = (os.getenv("FRONTEND_ORIGIN", "http://localhost:3000"),)
+CORS_ORIGIN_WHITELIST = (os.getenv("FRONTEND_ORIGIN", "http://localhost:5173"),)
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
