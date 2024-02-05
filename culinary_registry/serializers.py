@@ -4,6 +4,7 @@ class IngredientSerializer:
         return {
             'name': instance.name,
             'brand': instance.brand,
+            'calory': instance.calory,
             'amount': instance.amount,
             'carbohydrate': instance.carbohydrate,
             'protein': instance.protein,
