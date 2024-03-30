@@ -2,6 +2,7 @@ class IngredientSerializer:
     @staticmethod
     def to_json(instance):
         return {
+            'id': instance.id,
             'name': instance.name,
             'brand': instance.brand,
             'calory': instance.calory,
