@@ -105,6 +105,7 @@ import IngredientForm from "@/components/IngredientForm.vue"
       itemsPerPage: 15,
       totalPages: 0,
       dialogDelete: false,
+      itemToDelete: {},
       headers: [
         {
           title: 'Ingredientes (Aproximados à 100g )',
@@ -180,14 +181,18 @@ import IngredientForm from "@/components/IngredientForm.vue"
       },
 
       deleteItem (item) {
-        this.editedIndex = this.ingredients.indexOf(item)
-        this.editedItem = Object.assign({}, item)
         this.dialogDelete = true
+        this.itemToDelete = item
       },
 
       deleteItemConfirm () {
-        this.ingredients.splice(this.editedIndex, 1)
-        this.closeDelete()
+        try {
+          ingredientsApi.deleteIngredient(this.itemToDelete?.id) 
+        } catch (error) {
+          console.log(error)
+        } finally {
+          this.closeDelete()
+        }
       },
 
       close () {
@@ -200,10 +205,6 @@ import IngredientForm from "@/components/IngredientForm.vue"
 
       closeDelete () {
         this.dialogDelete = false
-        this.$nextTick(() => {
-          this.editedItem = Object.assign({}, this.defaultItem)
-          this.editedIndex = -1
-        })
       },
 
       save () {

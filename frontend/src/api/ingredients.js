@@ -32,5 +32,16 @@ export default {
                 return reject(error)
             })
         })
+    },
+
+    deleteIngredient: (ingredientId) => {
+        return new Promise((resolve, reject) => {
+            api.post(`api/culinary/delete/ingredient/${ingredientId}/`)
+            .then((response) =>{
+                return resolve(response)
+            }).catch((error) => {
+                return reject(response)
+            })
+        })
     }
 }
